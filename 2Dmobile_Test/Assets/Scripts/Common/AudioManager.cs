@@ -88,17 +88,30 @@ public class AudioManager : SingletonBehaviour<AudioManager>
             m_SFXPlayer[(SFX)i] = newAudioSource; // 딕셔너리에 오디오 소스 추가
         }
     }
+    
+    public void OnLoadUserData()
+    {
+        var userSettingsData = UserDataManager.Instance.GetUserData<UserSettingsData>();
+        if (userSettingsData != null)
+        {
+            if (!userSettingsData.Sound)
+            {
+                Mute();
+            }
+        }
+    }
+    
 
     // BGM 재생 함수
     public void PlayBGM(BGM bgm)
     {
-        if(m_CurrBGMSource) // 현재 재생 중인 BGM이 있는 경우
+        if (m_CurrBGMSource) // 현재 재생 중인 BGM이 있는 경우
         {
             m_CurrBGMSource.Stop(); // 현재 BGM 정지
             m_CurrBGMSource = null; // 현재 BGM 소스 초기화
         }
 
-        if(!m_BGMPlayer.ContainsKey(bgm)) // 요청한 BGM이 딕셔너리에 없는 경우
+        if (!m_BGMPlayer.ContainsKey(bgm)) // 요청한 BGM이 딕셔너리에 없는 경우
         {
             Logger.LogError($"Invalid clip name. {bgm}"); // 에러 로그 출력
             return; // 함수 종료

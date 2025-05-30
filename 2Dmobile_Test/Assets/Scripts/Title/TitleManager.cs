@@ -43,6 +43,7 @@ public class TitleManager : MonoBehaviour
         // confirmUIData.OKBtnTxt = "OK";
         // UIManager.Instance.OpenUI<ConfirmUI>(confirmUIData);
 
+        AudioManager.Instance.OnLoadUserData();
 
         StartCoroutine(LoadGameCo());
     }

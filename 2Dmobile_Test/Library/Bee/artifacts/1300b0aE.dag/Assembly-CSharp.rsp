@@ -455,6 +455,7 @@
 "Assets/Scripts/Common/SingletonBehaviour.cs"
 "Assets/Scripts/Common/UI/BaseUI.cs"
 "Assets/Scripts/Common/UI/ConfirmUI.cs"
+"Assets/Scripts/Common/UI/SettingsUI.cs"
 "Assets/Scripts/Common/UI/UIManager.cs"
 "Assets/Scripts/Common/UserData/IUserData.cs"
 "Assets/Scripts/Common/UserData/UserDataManager.cs"

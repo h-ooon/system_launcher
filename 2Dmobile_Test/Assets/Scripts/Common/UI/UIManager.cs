@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 public class UIManager : SingletonBehaviour<UIManager>
 {
+    private Camera uiCamera;
+
     public Transform UICanvasTrs; // UI 캔버스 Transform
     public Transform ClosedUITrs; // 닫힌 UI를 보관할 Transform
 
@@ -10,6 +14,32 @@ public class UIManager : SingletonBehaviour<UIManager>
     private Dictionary<System.Type, GameObject> m_OpenUIPool = new Dictionary<System.Type, GameObject>(); // 열린 UI들을 저장하는 딕셔너리
     private Dictionary<System.Type, GameObject> m_ClosedUIPool = new Dictionary<System.Type, GameObject>(); // 닫힌 UI들을 저장하는 딕셔너리
 
+    protected override void Init()
+    {
+        base.Init();
+
+        if (uiCamera == null)
+        {
+            uiCamera = GameObject.Find("UICamera")?.GetComponent<Camera>();
+            if (uiCamera == null)
+                Debug.LogError("[UIManager] UICamera not found!");
+        }
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null)
+            return;
+
+        var mainCamData = mainCamera.GetUniversalAdditionalCameraData();
+
+        if (!mainCamData.cameraStack.Contains(uiCamera))
+            mainCamData.cameraStack.Add(uiCamera);
+
+    }
     private BaseUI GetUI<T>(out bool isAlreadyOpen) // 제네릭 타입으로 UI를 가져오는 메서드
     {
         System.Type uiType = typeof(T); // 제네릭 타입을 System.Type으로 변환

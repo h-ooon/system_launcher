@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // 사용자 데이터를 관리하는 싱글톤 매니저 클래스
@@ -37,7 +38,7 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
         ExistsSavedData = PlayerPrefs.GetInt("ExistsSavedData") == 1 ? true : false;
 
         // 저장된 데이터가 있는 경우에만 로드
-        if(ExistsSavedData)
+        if (ExistsSavedData)
         {
             // 리스트의 모든 데이터를 로드
             for (int i = 0; i < UserDataList.Count; i++)
@@ -45,7 +46,7 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
                 UserDataList[i].LoadData(); // 각 데이터 로드 실행
             }
         }
-    } 
+    }
 
     // 사용자 데이터 저장
     public void SaveUserData()
@@ -56,18 +57,25 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
         for (int i = 0; i < UserDataList.Count; i++)
         {
             bool isSaveSuccess = UserDataList[i].SaveData(); // 각 데이터 저장 실행
-            if(!isSaveSuccess) // 저장 실패 시
+            if (!isSaveSuccess) // 저장 실패 시
             {
                 hasSaveError = true; // 오류 플래그 설정
             }
         }
 
         // 모든 데이터가 성공적으로 저장된 경우
-        if(!hasSaveError)
+        if (!hasSaveError)
         {
             ExistsSavedData = true; // 저장 데이터 존재 플래그 설정
             PlayerPrefs.SetInt("ExistsSavedData", 1); // PlayerPrefs에 저장
             PlayerPrefs.Save(); // 변경사항을 디스크에 저장
         }
+    }
+    
+     // 제네릭 타입 T로 특정 사용자 데이터를 조회하는 메서드
+    public T GetUserData<T>() where T : class, IUserData
+    {
+        // UserDataList에서 T 타입에 해당하는 첫 번째 객체를 반환
+        return UserDataList.OfType<T>().FirstOrDefault();
     }
 }
