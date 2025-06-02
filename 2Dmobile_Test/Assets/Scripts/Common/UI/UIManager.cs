@@ -14,6 +14,11 @@ public class UIManager : SingletonBehaviour<UIManager>
     private Dictionary<System.Type, GameObject> m_OpenUIPool = new Dictionary<System.Type, GameObject>(); // 열린 UI들을 저장하는 딕셔너리
     private Dictionary<System.Type, GameObject> m_ClosedUIPool = new Dictionary<System.Type, GameObject>(); // 닫힌 UI들을 저장하는 딕셔너리
 
+    // 재화 UI 컴포넌트
+    private GoodsUI m_StatsUI;
+
+    // 초기화 메서드
+
     protected override void Init()
     {
         base.Init();
@@ -23,6 +28,15 @@ public class UIManager : SingletonBehaviour<UIManager>
             uiCamera = GameObject.Find("UICamera")?.GetComponent<Camera>();
             if (uiCamera == null)
                 Debug.LogError("[UIManager] UICamera not found!");
+        }
+
+        // 씬에서 GoodsUI 컴포넌트 찾기
+        m_StatsUI = FindObjectOfType<GoodsUI>();
+        // GoodsUI를 찾지 못했을 때
+        if (!m_StatsUI)
+        {
+            // 로그 출력
+            Logger.Log("No stats ui component found.");
         }
 
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -87,7 +101,7 @@ public class UIManager : SingletonBehaviour<UIManager>
             return; // 메서드 종료
         }
 
-        var siblingIdx = UICanvasTrs.childCount; // UI 캔버스의 자식 개수를 형제 인덱스로 설정
+        var siblingIdx = UICanvasTrs.childCount - 1; // UI 캔버스의 자식 개수를 형제 인덱스로 설정
         ui.Init(UICanvasTrs); // UI 초기화
         ui.transform.SetSiblingIndex(siblingIdx); // UI의 형제 인덱스 설정
         ui.gameObject.SetActive(true); // UI 게임오브젝트 활성화
@@ -142,6 +156,20 @@ public class UIManager : SingletonBehaviour<UIManager>
         while (m_FrontUI) // 가장 앞의 UI가 있는 동안 반복
         {
             m_FrontUI.CloseUI(true); // 가장 앞의 UI 닫기 (전체 닫기 모드)
+        }
+    }
+    
+     // 재화 UI 활성화/비활성화
+    public void EnableStatsUI(bool value)
+    {
+        // 재화 UI 게임오브젝트 활성화 상태 설정
+        m_StatsUI.gameObject.SetActive(value);
+
+        // 활성화하는 경우
+        if(value)
+        {
+            // 재화 값들 설정
+            m_StatsUI.SetValues();
         }
     }
 }
