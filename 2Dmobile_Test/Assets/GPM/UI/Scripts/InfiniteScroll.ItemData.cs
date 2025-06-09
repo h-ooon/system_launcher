@@ -14,7 +14,7 @@ namespace Gpm.Ui
                 this.data = data;
             }
 
-            internal InfiniteScrollData data;
+            public InfiniteScrollData data { get; private set; }
             internal int index = -1;
 
             internal int itemIndex = -1;
@@ -95,7 +95,7 @@ namespace Gpm.Ui
         {
             List<InfiniteScrollData> list = new List<InfiniteScrollData>();
 
-            for(int index = 0; index < dataList.Count; index++)
+            for (int index = 0; index < dataList.Count; index++)
             {
                 list.Add(dataList[index].data);
             }
@@ -108,7 +108,7 @@ namespace Gpm.Ui
 
             for (int index = 0; index < dataList.Count; index++)
             {
-                if(dataList[index].itemIndex != -1)
+                if (dataList[index].itemIndex != -1)
                 {
                     list.Add(dataList[index].data);
                 }
@@ -216,14 +216,14 @@ namespace Gpm.Ui
             addData.itemIndex = itemIndex;
             itemCount++;
 
-            for (int dataIndex = addData.index+1; dataIndex < dataList.Count; dataIndex++)
+            for (int dataIndex = addData.index + 1; dataIndex < dataList.Count; dataIndex++)
             {
                 if (dataList[dataIndex].itemIndex != -1)
                 {
                     dataList[dataIndex].itemIndex++;
                 }
             }
-            
+
             needReBuildLayout = true;
 
             return true;
@@ -240,7 +240,7 @@ namespace Gpm.Ui
             {
                 DataContext addData = new DataContext(data, insertIndex);
                 InitFitContext(addData);
-                
+
                 for (int dataIndex = insertIndex; dataIndex < dataList.Count; dataIndex++)
                 {
                     dataList[dataIndex].index++;
@@ -301,7 +301,7 @@ namespace Gpm.Ui
 
             needReBuildLayout = true;
         }
-        
+
         private void OnSelectItem(InfiniteScrollData data)
         {
             int dataIndex = GetDataIndex(data);
@@ -314,6 +314,18 @@ namespace Gpm.Ui
                     selectCallback(data);
                 }
             }
+        }
+        
+          // 데이터 리스트를 정렬하는 메서드
+        public void SortDataList(Comparison<DataContext> comparison)
+        {
+            // 주어진 비교 함수로 데이터 리스트 정렬
+            dataList.Sort(comparison);
+
+            // 아이템 리스트 업데이트 필요 플래그 설정
+            needUpdateItemList = true;
+            // 표시되는 아이템 업데이트
+            UpdateShowItem();
         }
     }
 }

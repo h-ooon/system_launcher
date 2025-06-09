@@ -38,7 +38,7 @@ public class InventoryItemSlot : InfiniteScrollItem
         // 스크롤 데이터를 InventoryItemSlotData로 캐스팅
         m_InventoryItemSlotData = scrollData as InventoryItemSlotData;
         // 캐스팅된 데이터가 null인 경우
-        if(m_InventoryItemSlotData == null)
+        if (m_InventoryItemSlotData == null)
         {
             // 에러 로그 출력
             Logger.LogError("m_InventoryItemSlotData is invalid.");
@@ -72,5 +72,15 @@ public class InventoryItemSlot : InfiniteScrollItem
             // 텍스처를 스프라이트로 변환하여 아이콘 이미지에 설정
             ItemIcon.sprite = Sprite.Create(itemIconTexture, new Rect(0, 0, itemIconTexture.width, itemIconTexture.height), new Vector2(1f, 1f));
         }
+
+
+    }
+    
+    public void OnClickInventoryItemSlot()
+    {
+        var uiData = new EquipmentUIData();
+        uiData.SerialNumber = m_InventoryItemSlotData.SerialNumber;
+        uiData.ItemId = m_InventoryItemSlotData.ItemId;
+        UIManager.Instance.OpenUI<EquipmentUI>(uiData);
     }
 }

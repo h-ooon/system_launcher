@@ -6,77 +6,93 @@ using UnityEngine;
 // 사용자 데이터를 관리하는 싱글톤 매니저 클래스
 public class UserDataManager : SingletonBehaviour<UserDataManager>
 {
-    // 저장된 데이터가 존재하는지 여부
+    // 저장된 데이터가 존재하는지 확인하는 프로퍼티
     public bool ExistsSavedData { get; private set; }
-    // 모든 사용자 데이터 인스턴스를 관리하는 컨테이너
+    // 모든 사용자 데이터 인스턴스를 관리하는 리스트
+
     public List<IUserData> UserDataList { get; private set; } = new List<IUserData>();
 
-    // 초기화 함수
+    // 초기화 메서드 오버라이드
     protected override void Init()
     {
-        base.Init(); // 부모 클래스 초기화 호출
+        // 부모 클래스의 초기화 메서드 호출
+        base.Init();
 
-        // 모든 사용자 데이터를 UserDataList에 추가
+        // 사용자 설정 데이터를 리스트에 추가
+        //��� ���� �����͸� UserDataList�� �߰�
         UserDataList.Add(new UserSettingsData());
+        // 사용자 재화 데이터를 리스트에 추가
         UserDataList.Add(new UserGoodsData());
+        // 사용자 인벤토리 데이터를 리스트에 추가
         UserDataList.Add(new UserInventoryData());
+        // 사용자 플레이 데이터를 리스트에 추가
+        UserDataList.Add(new UserPlayData());
     }
 
-    // 모든 사용자 데이터를 기본값으로 설정
+    // 모든 사용자 데이터를 기본값으로 설정하는 메서드
     public void SetDefaultUserData()
     {
-        // 리스트의 모든 데이터에 대해 반복
+        // 사용자 데이터 리스트 개수만큼 반복
         for (int i = 0; i < UserDataList.Count; i++)
         {
-            UserDataList[i].SetDefaultData(); // 각 데이터를 기본값으로 초기화
+            // 각 사용자 데이터의 기본값 설정
+            UserDataList[i].SetDefaultData();
         }
     }
 
-    // 사용자 데이터 로드
+    // 저장된 사용자 데이터를 불러오는 메서드
     public void LoadUserData()
     {
         // PlayerPrefs에서 저장된 데이터 존재 여부 확인
         ExistsSavedData = PlayerPrefs.GetInt("ExistsSavedData") == 1 ? true : false;
 
-        // 저장된 데이터가 있는 경우에만 로드
-        if (ExistsSavedData)
+        // 저장된 데이터가 존재하는 경우
+        if(ExistsSavedData)
         {
-            // 리스트의 모든 데이터를 로드
+            // 사용자 데이터 리스트 개수만큼 반복
             for (int i = 0; i < UserDataList.Count; i++)
             {
-                UserDataList[i].LoadData(); // 각 데이터 로드 실행
+                // 각 사용자 데이터 불러오기
+                UserDataList[i].LoadData();
             }
         }
     }
 
-    // 사용자 데이터 저장
+    // 사용자 데이터를 저장하는 메서드
     public void SaveUserData()
     {
-        bool hasSaveError = false; // 저장 오류 발생 여부 추적
+        // 저장 오류 발생 여부를 확인하는 변수
+        bool hasSaveError = false;
 
-        // 리스트의 모든 데이터를 저장 시도
+        // 사용자 데이터 리스트 개수만큼 반복
         for (int i = 0; i < UserDataList.Count; i++)
         {
-            bool isSaveSuccess = UserDataList[i].SaveData(); // 각 데이터 저장 실행
-            if (!isSaveSuccess) // 저장 실패 시
+            // 각 사용자 데이터 저장 및 성공 여부 확인
+            bool isSaveSuccess = UserDataList[i].SaveData();
+            // 저장에 실패한 경우
+            if(!isSaveSuccess)
             {
-                hasSaveError = true; // 오류 플래그 설정
+                // 오류 플래그 설정
+                hasSaveError = true;
             }
         }
 
-        // 모든 데이터가 성공적으로 저장된 경우
-        if (!hasSaveError)
+        // 저장 오류가 없는 경우
+        if(!hasSaveError)
         {
-            ExistsSavedData = true; // 저장 데이터 존재 플래그 설정
-            PlayerPrefs.SetInt("ExistsSavedData", 1); // PlayerPrefs에 저장
-            PlayerPrefs.Save(); // 변경사항을 디스크에 저장
+            // 저장된 데이터 존재 플래그 설정
+            ExistsSavedData = true;
+            // PlayerPrefs에 저장된 데이터 존재 여부 저장
+            PlayerPrefs.SetInt("ExistsSavedData", 1);
+            // PlayerPrefs 저장 실행
+            PlayerPrefs.Save();
         }
     }
-    
-     // 제네릭 타입 T로 특정 사용자 데이터를 조회하는 메서드
+
+    // 제네릭을 사용하여 특정 타입의 사용자 데이터를 가져오는 메서드
     public T GetUserData<T>() where T : class, IUserData
     {
-        // UserDataList에서 T 타입에 해당하는 첫 번째 객체를 반환
+        // LINQ를 사용하여 해당 타입의 첫 번째 데이터 반환
         return UserDataList.OfType<T>().FirstOrDefault();
     }
 }
